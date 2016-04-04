@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>DNF</title>
+  <style>
+
+    #input {
+      width: 450px;
+      height: 40px;
+      font-size: 40px;
+    }
+    #button {
+      width: 400px;
+      height: 60px;
+      font-size: 40px;
+    }
+    #svg {
+      overflow: scroll;
+    }
+
+    .node {
+      cursor: pointer;
+    }
+
+    .node circle {
+      fill: #fff;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+    }
+
+    .node text {
+      font: 20px sans-serif;
+    }
+
+    .link {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 1.5px;
+    }
+
+  </style>
+</head>
+<body>
+  <div id="svg"></div>
+  <div id="board">
+    <input id="input" type="text" placeholder="please input an formula"></input>
+  <button id="button" onclick="restart()">update</button>
+  </div>
+</body>
+<script src="./d3.min.js"></script>
+
+<script src="./formula-parser.min.js"></script>
+
+
+<script src="./algorithm.js"></script>
+<script src="./ex.js"></script>
+
+<script>
+
+  var variableKey = 'prop';
+
+  var unaries = [
+    { symbol: '!',  key: 'neg',  precedence: 3 }
+  ];
+
+  var binaries = [
+    { symbol: '&',   key: 'conj', precedence: 2, associativity: 'right' },
+    { symbol: '|',   key: 'disj', precedence: 2, associativity: 'right' }
+  ];
+
+
+
+  var Parser = new FormulaParser(variableKey, unaries, binaries);
+
+  function restart(){
+
+    var formula = document.getElementById("input").value;
+    var result = Parser.parse(formula);
+    if(!result){
+      alert("cannot parse the formula");
+    }
+
+    var root = DNF(result);
+
+    show(root);
+
+
+  }
+
+
+  // var result = Parser.parse("!((!(F|C&B)|(A|B))&(C|D))");
+
+  // var result = Parser.parse("(p|q)&(~p|r|~s)&(s|~t)");
+
+
+</script>
+
