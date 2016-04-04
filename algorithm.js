@@ -137,6 +137,79 @@ function DNF(result){
   A();
 
 
+  // console.log(JSON.stringify(trace[1]));
+
+  // clear atoms
+
+  var indices = [];
+
+  trace.forEach(function(log, index){
+
+    if(log.operator == "atom"){
+      indices.push(index);
+      var pos = trace.map(function(e){return e.id}).indexOf(log.parent_id);
+      trace[pos].variable_array = log.variable_array;
+      trace[pos].formula_stack = log.formula_stack;
+      trace[pos].negation_flag = log.negation_flag;
+
+
+      trace.forEach(function(element){
+
+        if(element.parent_id == log.id)
+          element.parent_id = log.parent_id;
+
+      });
+    }
+
+
+  });
+
+  indices.reverse().forEach(function(index){
+
+    trace.splice(index, 1);
+
+  });
+
+
+  // clear negations
+
+  var indices = [];
+
+  trace.forEach(function(log, index){
+
+    if(log.operator == "neg"){
+      indices.push(index);
+      var pos = trace.map(function(e){return e.id}).indexOf(log.parent_id);
+      trace[pos].variable_array = log.variable_array;
+      trace[pos].formula_stack = log.formula_stack;
+      trace[pos].negation_flag = log.negation_flag;
+
+
+      trace.forEach(function(element){
+
+        if(element.parent_id == log.id)
+          element.parent_id = log.parent_id;
+
+      });
+    }
+
+
+  });
+
+  indices.reverse().forEach(function(index){
+
+    trace.splice(index, 1);
+
+  });
+
+
+
+
+
+
+
+
+
   function append_children(name){
     var children = [];
     trace.forEach(function(log){
@@ -169,6 +242,11 @@ function DNF(result){
   root.children = append_children(root.name);
 
   return root;
+
+
+
+
+
 
 
 }

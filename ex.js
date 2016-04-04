@@ -1,6 +1,7 @@
 var svgMode = false;
 
 
+
 var svg;
 
 function show(root){
@@ -49,6 +50,35 @@ update(root);
 
 d3.select(self.frameElement).style("height", "800px");
 
+
+function display(d){
+
+  var formula_stack = d.content.formula_stack;
+  var negation_flag = d.content.negation_flag;
+  var variable_array = d.content.variable_array;
+
+  var the_set = [];
+
+  formula_stack.forEach(function(formula, index){
+
+    if(negation_flag[index]){
+      the_set.push( "!(" + escodegen.generate(fix(formula), {format:{space: ""}}).replace(/'/g, "") + ")" );
+    }
+    else{
+      the_set.push( escodegen.generate(fix(formula), {format:{space: ""}}).replace(/'/g, "") );
+    }
+
+
+  });
+
+  the_set.push.apply(the_set, variable_array);
+
+  return the_set;
+
+
+
+}
+
 function update(source) {
 
   // Compute the new tree layout.
@@ -77,7 +107,7 @@ function update(source) {
       .attr("y", -10)
       .attr("dy", ".35em")
       .attr("text-anchor", "end")
-      .text(function(d) { return d.content.operator+":"+JSON.stringify(d.content.variable_array); })
+      .text(function(d) { return JSON.stringify(display(d));})
       .style("fill-opacity", 1e-6);
 
 

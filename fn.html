@@ -51,6 +51,8 @@
 
 <script src="./formula-parser.min.js"></script>
 
+<script src="./escodegen.browser.min.js"></script>
+
 
 <script src="./algorithm.js"></script>
 <script src="./ex.js"></script>
@@ -65,12 +67,59 @@
 
   var binaries = [
     { symbol: '&',   key: 'conj', precedence: 2, associativity: 'right' },
-    { symbol: '|',   key: 'disj', precedence: 2, associativity: 'right' }
+    { symbol: '|',   key: 'disj', precedence: 1, associativity: 'right' }
   ];
 
 
 
   var Parser = new FormulaParser(variableKey, unaries, binaries);
+
+
+  function fix(result){
+
+    var flag = 0;
+
+    if (result["neg"] != null){
+      flag = 1;
+      result.type = "UnaryExpression";
+      result.operator = "!";
+      result.argument = fix(result["neg"]);
+      //result["neg"] = null;
+    }
+    else if(result["conj"] != null){
+      flag = 2;
+      result.type = "BinaryExpression";
+      result.operator = "&";
+      result.left = fix(result["conj"][0]);
+      result.right = fix(result["conj"][1]);
+      //result["conj"] = null;
+    }
+    else if(result["disj"] != null){
+      flag = 3;
+      result.type = "BinaryExpression";
+      result.operator = "|";
+      result.left = fix(result["disj"][0]);
+      result.right = fix(result["disj"][1]);
+      //result["disj"] = null;
+    }
+    else if (result["prop"] != null){
+      flag = 4;
+      result.type = "Literal";
+      result.value = result["prop"];
+      //result["prop"] = null;
+    }
+    else{
+
+      console.log("sth wrong: " + flag);
+    }
+
+    return result;
+
+  }
+
+
+
+
 
   function restart(){
 
@@ -79,6 +128,9 @@
     if(!result){
       alert("cannot parse the formula");
     }
+
+
+
 
     var root = DNF(result);
 
